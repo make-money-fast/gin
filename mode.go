@@ -10,7 +10,7 @@ import (
 	"os"
 	"sync/atomic"
 
-	"github.com/clearcodecn/gin/binding"
+	"github.com/make-money-fast/gin/binding"
 )
 
 // EnvGinMode indicates environment name for gin mode.

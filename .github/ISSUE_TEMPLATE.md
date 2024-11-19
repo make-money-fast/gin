@@ -14,7 +14,7 @@
 package main
 
 import (
-	"github.com/clearcodecn/gin"
+	"github.com/make-money-fast/gin"
 )
 
 func main() {

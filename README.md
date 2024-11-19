@@ -7,4 +7,4 @@
 
 
 * 安装
-    go get github.com/clearcodecn/gin
+    go get github.com/make-money-fast/gin

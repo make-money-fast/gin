@@ -2,7 +2,7 @@ package jethtml
 
 import (
 	"github.com/CloudyKit/jet/v6"
-	"github.com/clearcodecn/gin/render"
+	"github.com/make-money-fast/gin/render"
 	"net/http"
 )
 

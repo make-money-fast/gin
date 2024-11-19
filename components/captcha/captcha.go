@@ -1,8 +1,8 @@
 package captcha
 
 import (
-	"github.com/clearcodecn/gin"
 	"github.com/make-money-fast/captcha"
+	"github.com/make-money-fast/gin"
 )
 
 func Captcha(w, h int) gin.HandlerFunc {

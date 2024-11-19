@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/clearcodecn/gin/binding"
-	"github.com/clearcodecn/gin/render"
+	"github.com/make-money-fast/gin/binding"
+	"github.com/make-money-fast/gin/render"
 )
 
 // Content-Type MIME of the most common data formats.

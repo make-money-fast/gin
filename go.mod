@@ -1,4 +1,4 @@
-module github.com/clearcodecn/gin
+module github.com/make-money-fast/gin
 
 go 1.21.0
 

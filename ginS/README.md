@@ -6,8 +6,8 @@ This is API experiment for Gin.
 package main
 
 import (
-	"github.com/clearcodecn/gin"
-	"github.com/clearcodecn/gin/ginS"
+	"github.com/make-money-fast/gin"
+	"github.com/make-money-fast/gin/ginS"
 )
 
 func main() {

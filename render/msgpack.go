@@ -13,7 +13,7 @@ import (
 )
 
 // Check interface implemented here to support go build tag nomsgpack.
-// See: https://github.com/clearcodecn/gin/pull/1852/
+// See: https://github.com/make-money-fast/gin/pull/1852/
 var (
 	_ Render = MsgPack{}
 )

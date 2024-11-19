@@ -98,7 +98,7 @@ Gin enables `MsgPack` rendering feature by default. But you can disable this fea
 go build -tags=nomsgpack .
 ```
 
-This is useful to reduce the binary size of executable files. See the [detail information](https://github.com/clearcodecn/gin/pull/1852).
+This is useful to reduce the binary size of executable files. See the [detail information](https://github.com/make-money-fast/gin/pull/1852).
 
 ## API Examples
 
@@ -265,9 +265,9 @@ ids: map[b:hello a:1234]; names: map[second:tianou first:thinkerou]
 
 #### Single file
 
-References issue [#774](https://github.com/clearcodecn/gin/issues/774) and detail [example code](https://github.com/gin-gonic/examples/tree/master/upload-file/single).
+References issue [#774](https://github.com/make-money-fast/gin/issues/774) and detail [example code](https://github.com/gin-gonic/examples/tree/master/upload-file/single).
 
-`file.Filename` **SHOULD NOT** be trusted. See [`Content-Disposition` on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition#Directives) and [#1693](https://github.com/clearcodecn/gin/issues/1693)
+`file.Filename` **SHOULD NOT** be trusted. See [`Content-Disposition` on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition#Directives) and [#1693](https://github.com/make-money-fast/gin/issues/1693)
 
 > The filename is always optional and must not be used blindly by the application: path information should be stripped, and conversion to the server file system rules should be done.
 
@@ -717,8 +717,8 @@ import (
   "net/http"
   "time"
 
-  "github.com/clearcodecn/gin"
-  "github.com/clearcodecn/gin/binding"
+  "github.com/make-money-fast/gin"
+  "github.com/make-money-fast/gin/binding"
   "github.com/go-playground/validator/v10"
 )
 
@@ -776,7 +776,7 @@ See the [struct-lvl-validation example](https://github.com/gin-gonic/examples/tr
 
 ### Only Bind Query String
 
-`ShouldBindQuery` function only binds the query params and not the post data. See the [detail information](https://github.com/clearcodecn/gin/issues/742#issuecomment-315953017).
+`ShouldBindQuery` function only binds the query params and not the post data. See the [detail information](https://github.com/make-money-fast/gin/issues/742#issuecomment-315953017).
 
 ```go
 package main
@@ -785,7 +785,7 @@ import (
   "log"
   "net/http"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 type Person struct {
@@ -813,7 +813,7 @@ func startPage(c *gin.Context) {
 
 ### Bind Query String or Post Data
 
-See the [detail information](https://github.com/clearcodecn/gin/issues/742#issuecomment-264681292).
+See the [detail information](https://github.com/make-money-fast/gin/issues/742#issuecomment-264681292).
 
 ```go
 package main
@@ -823,7 +823,7 @@ import (
   "net/http"
   "time"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 type Person struct {
@@ -844,7 +844,7 @@ func startPage(c *gin.Context) {
   var person Person
   // If `GET`, only `Form` binding engine (`query`) used.
   // If `POST`, first checks the `content-type` for `JSON` or `XML`, then uses `Form` (`form-data`).
-  // See more at https://github.com/clearcodecn/gin/blob/master/binding/binding.go#L88
+  // See more at https://github.com/make-money-fast/gin/blob/master/binding/binding.go#L88
   if c.ShouldBind(&person) == nil {
     log.Println(person.Name)
     log.Println(person.Address)
@@ -874,7 +874,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/clearcodecn/gin"
+	"github.com/make-money-fast/gin"
 )
 
 type Person struct {
@@ -926,7 +926,7 @@ package main
 import (
 	"log"
 	"time"
-	"github.com/clearcodecn/gin"
+	"github.com/make-money-fast/gin"
 )
 
 type Person struct {
@@ -946,7 +946,7 @@ func startPage(c *gin.Context) {
 	var person Person
 	// If `GET`, only `Form` binding engine (`query`) used.
 	// If `POST`, first checks the `content-type` for `JSON` or `XML`, then uses `Form` (`form-data`).
-	// See more at https://github.com/clearcodecn/gin/blob/master/binding/binding.go#L48
+	// See more at https://github.com/make-money-fast/gin/blob/master/binding/binding.go#L48
         if c.ShouldBind(&person) == nil {
                 log.Println(person.Name)
                 log.Println(person.Addresses)
@@ -965,7 +965,7 @@ $ curl -X GET "localhost:8085/testing?name=appleboy&addresses=foo,bar&birthday=1
 
 ### Bind Uri
 
-See the [detail information](https://github.com/clearcodecn/gin/issues/846).
+See the [detail information](https://github.com/make-money-fast/gin/issues/846).
 
 ```go
 package main
@@ -973,7 +973,7 @@ package main
 import (
   "net/http"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 type Person struct {
@@ -1008,7 +1008,7 @@ curl -v localhost:8088/thinkerou/not-uuid
 package main
 
 import (
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
   "strings"
 )
 
@@ -1051,7 +1051,7 @@ import (
   "fmt"
   "net/http"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 type testHeader struct {
@@ -1083,7 +1083,7 @@ func main() {
 
 ### Bind HTML checkboxes
 
-See the [detail information](https://github.com/clearcodecn/gin/issues/129#issuecomment-124260092)
+See the [detail information](https://github.com/make-money-fast/gin/issues/129#issuecomment-124260092)
 
 main.go
 
@@ -1497,7 +1497,7 @@ import (
   "net/http"
   "time"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func formatAsDate(t time.Time) string {
@@ -1550,7 +1550,7 @@ r.GET("/test", func(c *gin.Context) {
 })
 ```
 
-Issuing a HTTP redirect from POST. Refer to issue: [#444](https://github.com/clearcodecn/gin/issues/444)
+Issuing a HTTP redirect from POST. Refer to issue: [#444](https://github.com/make-money-fast/gin/issues/444)
 
 ```go
 r.POST("/test", func(c *gin.Context) {
@@ -1722,7 +1722,7 @@ import (
   "net/http"
 
   "github.com/gin-gonic/autotls"
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func main() {
@@ -1747,7 +1747,7 @@ import (
   "net/http"
 
   "github.com/gin-gonic/autotls"
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
   "golang.org/x/crypto/acme/autocert"
 )
 
@@ -1771,7 +1771,7 @@ func main() {
 
 ### Run multiple service using Gin
 
-See the [question](https://github.com/clearcodecn/gin/issues/346) and try the following example:
+See the [question](https://github.com/make-money-fast/gin/issues/346) and try the following example:
 
 ```go
 package main
@@ -1781,7 +1781,7 @@ import (
   "net/http"
   "time"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
   "golang.org/x/sync/errgroup"
 )
 
@@ -1864,7 +1864,7 @@ There are a few approaches you can use to perform a graceful shutdown or restart
 
 #### Third-party packages
 
-We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer to issue [#296](https://github.com/clearcodecn/gin/issues/296) for more details.
+We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer to issue [#296](https://github.com/make-money-fast/gin/issues/296) for more details.
 
 ```go
 router := gin.Default()
@@ -1897,7 +1897,7 @@ import (
   "syscall"
   "time"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func main() {
@@ -1955,7 +1955,7 @@ import (
   "html/template"
   "net/http"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 //go:embed assets/* templates/*
@@ -2131,7 +2131,7 @@ enough to call binding at once.
 2. This feature is only needed for some formats -- `JSON`, `XML`, `MsgPack`,
 `ProtoBuf`. For other formats, `Query`, `Form`, `FormPost`, `FormMultipart`,
 can be called by `c.ShouldBind()` multiple times without any damage to
-performance (See [#1341](https://github.com/clearcodecn/gin/pull/1341)).
+performance (See [#1341](https://github.com/make-money-fast/gin/pull/1341)).
 
 ### Bind form-data request with custom struct and custom tag
 
@@ -2200,7 +2200,7 @@ import (
   "log"
   "net/http"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 var html = template.Must(template.New("https").Parse(`
@@ -2255,7 +2255,7 @@ import (
   "log"
   "net/http"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func main() {
@@ -2287,7 +2287,7 @@ func main() {
 import (
   "fmt"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func main() {
@@ -2330,7 +2330,7 @@ unnecessary computation.
 import (
   "fmt"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func main() {
@@ -2356,7 +2356,7 @@ Look at the example below:
 import (
   "fmt"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func main() {
@@ -2392,7 +2392,7 @@ package main
 import (
   "net/http"
 
-  "github.com/clearcodecn/gin"
+  "github.com/make-money-fast/gin"
 )
 
 func setupRouter() *gin.Engine {

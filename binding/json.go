@@ -10,7 +10,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/clearcodecn/gin/internal/json"
+	"github.com/make-money-fast/gin/internal/json"
 )
 
 // EnableDecoderUseNumber is used to call the UseNumber method on the JSON

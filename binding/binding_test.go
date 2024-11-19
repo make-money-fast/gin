@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/clearcodecn/gin/testdata/protoexample"
+	"github.com/make-money-fast/gin/testdata/protoexample"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"

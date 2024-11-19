@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/clearcodecn/gin"
+	"github.com/make-money-fast/gin"
 )
 
 var once sync.Once

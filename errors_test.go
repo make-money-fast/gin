@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/clearcodecn/gin/internal/json"
+	"github.com/make-money-fast/gin/internal/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
