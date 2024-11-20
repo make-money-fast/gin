@@ -91,6 +91,8 @@ type Context struct {
 	sameSite http.SameSite
 
 	muxVarCache map[string]string
+
+	templateVariables map[string]any
 }
 
 func (c *Context) initMuxVars() {
@@ -121,6 +123,7 @@ func (c *Context) reset() {
 	c.formCache = nil
 	c.sameSite = 0
 	c.muxVarCache = nil
+	c.templateVariables = nil
 	*c.params = (*c.params)[:0]
 	*c.skippedNodes = (*c.skippedNodes)[:0]
 }
@@ -706,6 +709,18 @@ func (c *Context) Bind(obj any) error {
 	return c.MustBindWith(obj, b)
 }
 
+func (c *Context) BindVarForm(obj any) error {
+	return binding.VarBinding("var").Bind(c.Request, obj)
+}
+
+func (c *Context) BindVarQuery(obj any) error {
+	return binding.VarBinding("var").Bind(c.Request, obj)
+}
+
+func (c *Context) BindVar(obj any) error {
+	return binding.VarBinding("var").Bind(c.Request, obj)
+}
+
 // BindJSON is a shortcut for c.MustBindWith(obj, binding.JSON).
 func (c *Context) BindJSON(obj any) error {
 	return c.MustBindWith(obj, binding.JSON)
@@ -1044,8 +1059,14 @@ func (c *Context) Render(code int, r render.Render) {
 // HTML renders the HTTP template specified by its file name.
 // It also updates the HTTP code and sets the Content-Type as "text/html".
 // See http://golang.org/doc/articles/wiki/
-func (c *Context) HTML(code int, name string, obj any) {
-	instance := c.engine.HTMLRender.Instance(name, obj)
+func (c *Context) HTML(ctx *render.Context) {
+	code := 200
+	instance := c.engine.HTMLRender.Instance(ctx)
+	c.Render(code, instance)
+}
+
+func (c *Context) HTMLWithCode(code int, ctx *render.Context) {
+	instance := c.engine.HTMLRender.Instance(ctx)
 	c.Render(code, instance)
 }
 
@@ -1200,86 +1221,6 @@ func (c *Context) Stream(step func(w io.Writer) bool) bool {
 }
 
 /************************************/
-/******** CONTENT NEGOTIATION *******/
-/************************************/
-
-// Negotiate contains all negotiations data.
-type Negotiate struct {
-	Offered  []string
-	HTMLName string
-	HTMLData any
-	JSONData any
-	XMLData  any
-	YAMLData any
-	Data     any
-	TOMLData any
-}
-
-// Negotiate calls different Render according to acceptable Accept format.
-func (c *Context) Negotiate(code int, config Negotiate) {
-	switch c.NegotiateFormat(config.Offered...) {
-	case binding.MIMEJSON:
-		data := chooseData(config.JSONData, config.Data)
-		c.JSON(code, data)
-
-	case binding.MIMEHTML:
-		data := chooseData(config.HTMLData, config.Data)
-		c.HTML(code, config.HTMLName, data)
-
-	case binding.MIMEXML:
-		data := chooseData(config.XMLData, config.Data)
-		c.XML(code, data)
-
-	case binding.MIMEYAML, binding.MIMEYAML2:
-		data := chooseData(config.YAMLData, config.Data)
-		c.YAML(code, data)
-
-	case binding.MIMETOML:
-		data := chooseData(config.TOMLData, config.Data)
-		c.TOML(code, data)
-
-	default:
-		c.AbortWithError(http.StatusNotAcceptable, errors.New("the accepted formats are not offered by the server")) //nolint: errcheck
-	}
-}
-
-// NegotiateFormat returns an acceptable Accept format.
-func (c *Context) NegotiateFormat(offered ...string) string {
-	assert1(len(offered) > 0, "you must provide at least one offer")
-
-	if c.Accepted == nil {
-		c.Accepted = parseAccept(c.requestHeader("Accept"))
-	}
-	if len(c.Accepted) == 0 {
-		return offered[0]
-	}
-	for _, accepted := range c.Accepted {
-		for _, offer := range offered {
-			// According to RFC 2616 and RFC 2396, non-ASCII characters are not allowed in headers,
-			// therefore we can just iterate over the string without casting it into []rune
-			i := 0
-			for ; i < len(accepted) && i < len(offer); i++ {
-				if accepted[i] == '*' || offer[i] == '*' {
-					return offer
-				}
-				if accepted[i] != offer[i] {
-					break
-				}
-			}
-			if i == len(accepted) {
-				return offer
-			}
-		}
-	}
-	return ""
-}
-
-// SetAccepted sets Accept header data.
-func (c *Context) SetAccepted(formats ...string) {
-	c.Accepted = formats
-}
-
-/************************************/
 /***** GOLANG.ORG/X/NET/CONTEXT *****/
 /************************************/
 
@@ -1333,4 +1274,24 @@ func (c *Context) Value(key any) any {
 		return nil
 	}
 	return c.Request.Context().Value(key)
+}
+
+func (c *Context) AssignH(h H) {
+	if c.templateVariables == nil {
+		c.templateVariables = make(map[string]any)
+	}
+	for k, v := range h {
+		c.templateVariables[k] = v
+	}
+}
+
+func (c *Context) Assign(key string, v any) {
+	if c.templateVariables == nil {
+		c.templateVariables = make(map[string]any)
+	}
+	c.templateVariables[key] = v
+}
+
+func (c *Context) Assigned() map[string]any {
+	return c.templateVariables
 }

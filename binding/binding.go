@@ -86,6 +86,9 @@ var (
 	Header        Binding     = headerBinding{}
 	Plain         BindingBody = plainBinding{}
 	TOML          BindingBody = tomlBinding{}
+	Var           Binding     = varBinding{}
+	VarQuery      Binding     = varQueryBinding{}
+	VarForm       Binding     = varFormBinding{}
 )
 
 // Default returns the appropriate Binding instance based on the HTTP method
@@ -113,6 +116,19 @@ func Default(method, contentType string) Binding {
 	default: // case MIMEPOSTForm:
 		return Form
 	}
+}
+
+func VarBinding(name string) Binding {
+	switch name {
+	case Var.Name():
+		return Var
+	case VarForm.Name():
+		return VarForm
+	case VarQuery.Name():
+		return VarQuery
+	}
+
+	panic("unknown varbinding: " + name)
 }
 
 func validate(obj any) error {

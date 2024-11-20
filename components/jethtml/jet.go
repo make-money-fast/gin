@@ -2,12 +2,14 @@ package jethtml
 
 import (
 	"github.com/CloudyKit/jet/v6"
+	"github.com/make-money-fast/gin"
 	"github.com/make-money-fast/gin/render"
 	"net/http"
 )
 
 type JetInstantRender struct {
 	views *jet.Set
+	funcs map[string]jet.Func
 }
 
 type JetInstantRenderOption struct {
@@ -73,18 +75,30 @@ func NewJetRender(directory string, options ...Options) *JetInstantRender {
 	}
 }
 
-func (j *JetInstantRender) Instance(s string, a any) render.Render {
+var (
+	contextKey = struct{}{}
+)
+
+func NewContext(name string, ctx *gin.Context) *render.Context {
+	c := &render.Context{
+		Name: name,
+	}
+	c.Set(contextKey, ctx)
+	return c
+}
+
+func (j *JetInstantRender) Instance(ctx *render.Context) render.Render {
 	return &JetHtmlRender{
 		views: j.views,
-		name:  s,
-		data:  a,
+		name:  ctx.Name,
+		ctx:   ctx.ContextValue(contextKey).(*gin.Context),
 	}
 }
 
 type JetHtmlRender struct {
 	views *jet.Set
 	name  string
-	data  any
+	ctx   *gin.Context
 }
 
 func (j *JetHtmlRender) Render(writer http.ResponseWriter) error {
@@ -92,7 +106,13 @@ func (j *JetHtmlRender) Render(writer http.ResponseWriter) error {
 	if err != nil {
 		return err
 	}
-	if err := t.Execute(writer, nil, j.data); err != nil {
+	data := j.ctx.Assigned()
+	variables := make(jet.VarMap)
+	for key, item := range data {
+		variables.Set(key, item)
+	}
+
+	if err := t.Execute(writer, variables, nil); err != nil {
 		return err
 	}
 	return nil

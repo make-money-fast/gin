@@ -5,6 +5,7 @@
 package render
 
 import (
+	"golang.org/x/net/context"
 	"html/template"
 	"net/http"
 )
@@ -17,10 +18,27 @@ type Delims struct {
 	Right string
 }
 
+type Context struct {
+	RequestContext context.Context
+	Name           string
+	DataMap        map[string]any
+}
+
+func (c *Context) ContextValue(key interface{}) any {
+	return c.RequestContext.Value(key)
+}
+
+func (c *Context) Set(key interface{}, val interface{}) {
+	if c.RequestContext == nil {
+		c.RequestContext = context.Background()
+	}
+	c.RequestContext = context.WithValue(c.RequestContext, key, val)
+}
+
 // HTMLRender interface is to be implemented by HTMLProduction and HTMLDebug.
 type HTMLRender interface {
 	// Instance returns an HTML instance.
-	Instance(string, any) Render
+	Instance(*Context) Render
 }
 
 // HTMLProduction contains template reference and its delims.
@@ -47,20 +65,20 @@ type HTML struct {
 var htmlContentType = []string{"text/html; charset=utf-8"}
 
 // Instance (HTMLProduction) returns an HTML instance which it realizes Render interface.
-func (r HTMLProduction) Instance(name string, data any) Render {
+func (r HTMLProduction) Instance(ctx *Context) Render {
 	return HTML{
 		Template: r.Template,
-		Name:     name,
-		Data:     data,
+		Name:     ctx.Name,
+		Data:     ctx.DataMap,
 	}
 }
 
 // Instance (HTMLDebug) returns an HTML instance which it realizes Render interface.
-func (r HTMLDebug) Instance(name string, data any) Render {
+func (r HTMLDebug) Instance(ctx *Context) Render {
 	return HTML{
 		Template: r.loadTemplate(),
-		Name:     name,
-		Data:     data,
+		Name:     ctx.Name,
+		Data:     ctx.DataMap,
 	}
 }
 func (r HTMLDebug) loadTemplate() *template.Template {

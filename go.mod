@@ -3,12 +3,14 @@ module github.com/make-money-fast/gin
 go 1.21.0
 
 require (
+	github.com/CloudyKit/jet/v6 v6.2.0
 	github.com/bytedance/sonic v1.11.6
 	github.com/gin-contrib/sse v0.1.0
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/goccy/go-json v0.10.2
 	github.com/gorilla/mux v1.8.1
 	github.com/json-iterator/go v1.1.12
+	github.com/make-money-fast/captcha v1.0.1
 	github.com/mattn/go-isatty v0.0.20
 	github.com/pelletier/go-toml/v2 v2.2.2
 	github.com/quic-go/quic-go v0.43.1
@@ -21,9 +23,7 @@ require (
 
 require (
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
-	github.com/CloudyKit/jet/v6 v6.2.0 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
-	github.com/clearcodecn/captcha v0.0.0-20211220142100-701c369653b2 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -35,7 +35,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/make-money-fast/captcha v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/onsi/ginkgo/v2 v2.9.5 // indirect
