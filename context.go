@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/make-money-fast/gin/binding"
-	"github.com/make-money-fast/gin/render"
 )
 
 // Content-Type MIME of the most common data formats.
@@ -93,6 +92,7 @@ type Context struct {
 	muxVarCache map[string]string
 
 	templateVariables map[string]any
+	templateName      string
 }
 
 func (c *Context) initMuxVars() {
@@ -124,6 +124,7 @@ func (c *Context) reset() {
 	c.sameSite = 0
 	c.muxVarCache = nil
 	c.templateVariables = nil
+	c.templateName = ""
 	*c.params = (*c.params)[:0]
 	*c.skippedNodes = (*c.skippedNodes)[:0]
 }
@@ -1039,8 +1040,8 @@ func (c *Context) Cookie(name string) (string, error) {
 	return val, nil
 }
 
-// Render writes the response headers and calls render.Render to render data.
-func (c *Context) Render(code int, r render.Render) {
+// Render writes the response headers and calls Render to render data.
+func (c *Context) Render(code int, r Render) {
 	c.Status(code)
 
 	if !bodyAllowedForStatus(code) {
@@ -1052,21 +1053,38 @@ func (c *Context) Render(code int, r render.Render) {
 	if err := r.Render(c.Writer); err != nil {
 		// Pushing error to c.Errors
 		_ = c.Error(err)
-		c.Abort()
+		log.Println("render failed:" + err.Error())
+		c.AbortWithError(400, err)
 	}
 }
 
 // HTML renders the HTTP template specified by its file name.
 // It also updates the HTTP code and sets the Content-Type as "text/html".
 // See http://golang.org/doc/articles/wiki/
-func (c *Context) HTML(ctx *render.Context) {
+func (c *Context) HTML(tpl ...string) {
+	rc := RenderContext{
+		GinContext: c,
+		Name:       c.templateName,
+		DataMap:    c.templateVariables,
+	}
+	if len(tpl) > 0 {
+		rc.Name = tpl[0]
+	}
 	code := 200
-	instance := c.engine.HTMLRender.Instance(ctx)
+	instance := c.engine.HTMLRender.Instance(&rc)
 	c.Render(code, instance)
 }
 
-func (c *Context) HTMLWithCode(code int, ctx *render.Context) {
-	instance := c.engine.HTMLRender.Instance(ctx)
+func (c *Context) HTMLWithCode(code int, tpl ...string) {
+	rc := RenderContext{
+		GinContext: c,
+		Name:       c.templateName,
+		DataMap:    c.templateVariables,
+	}
+	if len(tpl) > 0 {
+		rc.Name = tpl[0]
+	}
+	instance := c.engine.HTMLRender.Instance(&rc)
 	c.Render(code, instance)
 }
 
@@ -1075,14 +1093,14 @@ func (c *Context) HTMLWithCode(code int, ctx *render.Context) {
 // WARNING: we recommend using this only for development purposes since printing pretty JSON is
 // more CPU and bandwidth consuming. Use Context.JSON() instead.
 func (c *Context) IndentedJSON(code int, obj any) {
-	c.Render(code, render.IndentedJSON{Data: obj})
+	c.Render(code, IndentedJSON{Data: obj})
 }
 
 // SecureJSON serializes the given struct as Secure JSON into the response body.
 // Default prepends "while(1)," to response body if the given struct is array values.
 // It also sets the Content-Type as "application/json".
 func (c *Context) SecureJSON(code int, obj any) {
-	c.Render(code, render.SecureJSON{Prefix: c.engine.secureJSONPrefix, Data: obj})
+	c.Render(code, SecureJSON{Prefix: c.engine.secureJSONPrefix, Data: obj})
 }
 
 // JSONP serializes the given struct as JSON into the response body.
@@ -1091,59 +1109,59 @@ func (c *Context) SecureJSON(code int, obj any) {
 func (c *Context) JSONP(code int, obj any) {
 	callback := c.DefaultQuery("callback", "")
 	if callback == "" {
-		c.Render(code, render.JSON{Data: obj})
+		c.Render(code, JSON{Data: obj})
 		return
 	}
-	c.Render(code, render.JsonpJSON{Callback: callback, Data: obj})
+	c.Render(code, JsonpJSON{Callback: callback, Data: obj})
 }
 
 // JSON serializes the given struct as JSON into the response body.
 // It also sets the Content-Type as "application/json".
 func (c *Context) JSON(code int, obj any) {
-	c.Render(code, render.JSON{Data: obj})
+	c.Render(code, JSON{Data: obj})
 }
 
 // AsciiJSON serializes the given struct as JSON into the response body with unicode to ASCII string.
 // It also sets the Content-Type as "application/json".
 func (c *Context) AsciiJSON(code int, obj any) {
-	c.Render(code, render.AsciiJSON{Data: obj})
+	c.Render(code, AsciiJSON{Data: obj})
 }
 
 // PureJSON serializes the given struct as JSON into the response body.
 // PureJSON, unlike JSON, does not replace special html characters with their unicode entities.
 func (c *Context) PureJSON(code int, obj any) {
-	c.Render(code, render.PureJSON{Data: obj})
+	c.Render(code, PureJSON{Data: obj})
 }
 
 // XML serializes the given struct as XML into the response body.
 // It also sets the Content-Type as "application/xml".
 func (c *Context) XML(code int, obj any) {
-	c.Render(code, render.XML{Data: obj})
+	c.Render(code, XML{Data: obj})
 }
 
 // YAML serializes the given struct as YAML into the response body.
 func (c *Context) YAML(code int, obj any) {
-	c.Render(code, render.YAML{Data: obj})
+	c.Render(code, YAML{Data: obj})
 }
 
 // TOML serializes the given struct as TOML into the response body.
 func (c *Context) TOML(code int, obj any) {
-	c.Render(code, render.TOML{Data: obj})
+	c.Render(code, TOML{Data: obj})
 }
 
 // ProtoBuf serializes the given struct as ProtoBuf into the response body.
 func (c *Context) ProtoBuf(code int, obj any) {
-	c.Render(code, render.ProtoBuf{Data: obj})
+	c.Render(code, ProtoBuf{Data: obj})
 }
 
 // String writes the given string into the response body.
 func (c *Context) String(code int, format string, values ...any) {
-	c.Render(code, render.String{Format: format, Data: values})
+	c.Render(code, String{Format: format, Data: values})
 }
 
 // Redirect returns an HTTP redirect to the specific location.
 func (c *Context) Redirect(code int, location string) {
-	c.Render(-1, render.Redirect{
+	c.Render(-1, Redirect{
 		Code:     code,
 		Location: location,
 		Request:  c.Request,
@@ -1152,7 +1170,7 @@ func (c *Context) Redirect(code int, location string) {
 
 // Data writes some data into the body stream and updates the HTTP code.
 func (c *Context) Data(code int, contentType string, data []byte) {
-	c.Render(code, render.Data{
+	c.Render(code, Data{
 		ContentType: contentType,
 		Data:        data,
 	})
@@ -1160,7 +1178,7 @@ func (c *Context) Data(code int, contentType string, data []byte) {
 
 // DataFromReader writes the specified reader into the body stream and updates the HTTP code.
 func (c *Context) DataFromReader(code int, contentLength int64, contentType string, reader io.Reader, extraHeaders map[string]string) {
-	c.Render(code, render.Reader{
+	c.Render(code, Reader{
 		Headers:       extraHeaders,
 		ContentType:   contentType,
 		ContentLength: contentLength,
@@ -1283,6 +1301,10 @@ func (c *Context) AssignH(h H) {
 	for k, v := range h {
 		c.templateVariables[k] = v
 	}
+}
+
+func (c *Context) SetView(s string) {
+	c.templateName = s
 }
 
 func (c *Context) Assign(key string, v any) {

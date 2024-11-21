@@ -4,7 +4,7 @@
 
 //go:build !nomsgpack
 
-package render
+package gin
 
 import (
 	"bytes"

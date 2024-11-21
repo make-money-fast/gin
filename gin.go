@@ -17,7 +17,6 @@ import (
 	"sync"
 
 	"github.com/make-money-fast/gin/internal/bytesconv"
-	"github.com/make-money-fast/gin/render"
 
 	"github.com/quic-go/quic-go/http3"
 	"golang.org/x/net/http2"
@@ -167,9 +166,8 @@ type Engine struct {
 	// ContextWithFallback enable fallback Context.Deadline(), Context.Done(), Context.Err() and Context.Value() when Context.Request.Context() is not nil.
 	ContextWithFallback bool
 
-	delims           render.Delims
 	secureJSONPrefix string
-	HTMLRender       render.HTMLRender
+	HTMLRender       HTMLRender
 	FuncMap          template.FuncMap
 	allNoRoute       HandlersChain
 	allNoMethod      HandlersChain
@@ -213,7 +211,6 @@ func New(opts ...OptionFunc) *Engine {
 		UnescapePathValues:     true,
 		MaxMultipartMemory:     defaultMultipartMemory,
 		trees:                  make(methodTrees, 0, 9),
-		delims:                 render.Delims{Left: "{{", Right: "}}"},
 		secureJSONPrefix:       "while(1);",
 		trustedProxies:         []string{"0.0.0.0/0", "::/0"},
 		trustedCIDRs:           defaultTrustedCIDRs,
@@ -249,58 +246,10 @@ func (engine *Engine) allocateContext(maxParams uint16) *Context {
 	return &Context{engine: engine, params: &v, skippedNodes: &skippedNodes}
 }
 
-// Delims sets template left and right delims and returns an Engine instance.
-func (engine *Engine) Delims(left, right string) *Engine {
-	engine.delims = render.Delims{Left: left, Right: right}
-	return engine
-}
-
 // SecureJsonPrefix sets the secureJSONPrefix used in Context.SecureJSON.
 func (engine *Engine) SecureJsonPrefix(prefix string) *Engine {
 	engine.secureJSONPrefix = prefix
 	return engine
-}
-
-// LoadHTMLGlob loads HTML files identified by glob pattern
-// and associates the result with HTML renderer.
-func (engine *Engine) LoadHTMLGlob(pattern string) {
-	left := engine.delims.Left
-	right := engine.delims.Right
-	templ := template.Must(template.New("").Delims(left, right).Funcs(engine.FuncMap).ParseGlob(pattern))
-
-	if IsDebugging() {
-		debugPrintLoadTemplate(templ)
-		engine.HTMLRender = render.HTMLDebug{Glob: pattern, FuncMap: engine.FuncMap, Delims: engine.delims}
-		return
-	}
-
-	engine.SetHTMLTemplate(templ)
-}
-
-// LoadHTMLFiles loads a slice of HTML files
-// and associates the result with HTML renderer.
-func (engine *Engine) LoadHTMLFiles(files ...string) {
-	if IsDebugging() {
-		engine.HTMLRender = render.HTMLDebug{Files: files, FuncMap: engine.FuncMap, Delims: engine.delims}
-		return
-	}
-
-	templ := template.Must(template.New("").Delims(engine.delims.Left, engine.delims.Right).Funcs(engine.FuncMap).ParseFiles(files...))
-	engine.SetHTMLTemplate(templ)
-}
-
-// SetHTMLTemplate associate a template with HTML renderer.
-func (engine *Engine) SetHTMLTemplate(templ *template.Template) {
-	if len(engine.trees) > 0 {
-		debugPrintWARNINGSetHTMLTemplate()
-	}
-
-	engine.HTMLRender = render.HTMLProduction{Template: templ.Funcs(engine.FuncMap)}
-}
-
-// SetFuncMap sets the FuncMap used for template.FuncMap.
-func (engine *Engine) SetFuncMap(funcMap template.FuncMap) {
-	engine.FuncMap = funcMap
 }
 
 // NoRoute adds handlers for NoRoute. It returns a 404 code by default.

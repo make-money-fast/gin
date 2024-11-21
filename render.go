@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package render
+package gin
 
 import "net/http"
 
@@ -15,22 +15,19 @@ type Render interface {
 }
 
 var (
-	_ Render     = (*JSON)(nil)
-	_ Render     = (*IndentedJSON)(nil)
-	_ Render     = (*SecureJSON)(nil)
-	_ Render     = (*JsonpJSON)(nil)
-	_ Render     = (*XML)(nil)
-	_ Render     = (*String)(nil)
-	_ Render     = (*Redirect)(nil)
-	_ Render     = (*Data)(nil)
-	_ Render     = (*HTML)(nil)
-	_ HTMLRender = (*HTMLDebug)(nil)
-	_ HTMLRender = (*HTMLProduction)(nil)
-	_ Render     = (*YAML)(nil)
-	_ Render     = (*Reader)(nil)
-	_ Render     = (*AsciiJSON)(nil)
-	_ Render     = (*ProtoBuf)(nil)
-	_ Render     = (*TOML)(nil)
+	_ Render = (*JSON)(nil)
+	_ Render = (*IndentedJSON)(nil)
+	_ Render = (*SecureJSON)(nil)
+	_ Render = (*JsonpJSON)(nil)
+	_ Render = (*XML)(nil)
+	_ Render = (*String)(nil)
+	_ Render = (*Redirect)(nil)
+	_ Render = (*Data)(nil)
+	_ Render = (*YAML)(nil)
+	_ Render = (*Reader)(nil)
+	_ Render = (*AsciiJSON)(nil)
+	_ Render = (*ProtoBuf)(nil)
+	_ Render = (*TOML)(nil)
 )
 
 func writeContentType(w http.ResponseWriter, value []string) {
