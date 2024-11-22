@@ -104,12 +104,13 @@ func (j *JetHtmlRender) Render(writer http.ResponseWriter) error {
 	for key, item := range data {
 		variables.Set(key, item)
 	}
-
+	for name, fn := range globalFunctions {
+		variables.Set(name, fn)
+	}
 	for _, functionBuilder := range contextBuilders {
 		name, fn := functionBuilder(j.ctx)
 		variables.Set(name, fn)
 	}
-
 	if err := t.Execute(writer, variables, nil); err != nil {
 		return err
 	}
