@@ -3,8 +3,6 @@ package gin
 import (
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
-	"html/template"
-	"io"
 	"net/http"
 )
 
@@ -66,8 +64,6 @@ func NewJetRender(directory string, options ...Options) *JetInstantRender {
 		opts = append(opts, jet.WithTemplateNameExtensions(jetOption.extensions))
 	}
 
-	opts = append(opts, htmlEscaper)
-
 	views := jet.NewSet(
 		jet.NewOSFileSystemLoader(directory),
 		opts...,
@@ -82,10 +78,6 @@ func NewJetRender(directory string, options ...Options) *JetInstantRender {
 	return &JetInstantRender{
 		views: views,
 	}
-}
-
-func htmlEscaper(w io.Writer, b []byte) {
-	template.HTMLEscape(w, b)
 }
 
 func (j *JetInstantRender) Instance(ctx *RenderContext) Render {
