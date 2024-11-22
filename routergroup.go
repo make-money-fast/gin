@@ -44,6 +44,8 @@ type IRoutes interface {
 	OPTIONS(string, ...HandlerFunc) IRoutes
 	HEAD(string, ...HandlerFunc) IRoutes
 	Match([]string, string, ...HandlerFunc) IRoutes
+	Prefix(string, string, ...HandlerFunc) IRoutes
+	PrefixAny(relativePath string, handlers ...HandlerFunc)
 
 	StaticFile(string, string) IRoutes
 	Static(string, string) IRoutes
@@ -110,6 +112,18 @@ func (group *RouterGroup) Handle(httpMethod, relativePath string, handlers ...Ha
 // POST is a shortcut for router.Handle("POST", path, handlers).
 func (group *RouterGroup) POST(relativePath string, handlers ...HandlerFunc) IRoutes {
 	return group.handle(http.MethodPost, relativePath, handlers)
+}
+
+// Prefix is a shortcut for router.Prefix("POST", path, handlers).
+func (group *RouterGroup) Prefix(method string, relativePath string, handlers ...HandlerFunc) IRoutes {
+	return group.handle(method, relativePath, handlers)
+}
+
+// PrefixAny is a shortcut for router.Prefix("POST", path, handlers).
+func (group *RouterGroup) PrefixAny(relativePath string, handlers ...HandlerFunc) {
+	for _, method := range anyMethods {
+		group.handle(method, relativePath, handlers)
+	}
 }
 
 // GET is a shortcut for router.Handle("GET", path, handlers).
